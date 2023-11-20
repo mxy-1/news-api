@@ -52,3 +52,32 @@ describe("/api", () => {
        })
     })
 })
+
+describe("/api/articles/:article_id", () => {
+    test("200: GET responds with an article object", () => {
+        return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({body}) => {
+            const article = body.article
+            expect(article).toMatchObject({
+                article_id: 1,
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+              })
+        })
+    })
+    test("404: GET responds with error message when given an id that does not exist", () => {
+        return request(app)
+        .get("/api/articles/99")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("article does not exist")
+        })
+    })
+})
