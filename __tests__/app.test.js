@@ -4,6 +4,7 @@ const db = require("../db/connection")
 const { topicData, userData, articleData, commentData} = require("../db/data/test-data/index")
 const seed = require("../db/seeds/seed")
 const fs = require("fs/promises")
+const endpointsData = require("../endpoints.json")
 
 
 afterAll(() => db.end())
@@ -47,11 +48,7 @@ describe("/api", () => {
        .expect(200)
        .then(({body}) => {
         const endpoints = body.endpoints
-        const endpointsData = fs.readFile(`${__dirname}/../endpoints.json`)
-        return Promise.all([endpoints, endpointsData])
-       })
-       .then(([endpoints, endpointsData]) => {
-        expect(endpoints).toEqual(JSON.parse(endpointsData))
+        expect(endpoints).toEqual(endpointsData)
        })
     })
 })
