@@ -3,6 +3,7 @@ const request = require("supertest")
 const db = require("../db/connection")
 const { topicData, userData, articleData, commentData} = require("../db/data/test-data/index")
 const seed = require("../db/seeds/seed")
+const fs = require("fs/promises")
 
 
 afterAll(() => db.end())
@@ -36,5 +37,21 @@ describe("ANY /invalidpath", () => {
         .then(({body}) => {
             expect(body.msg).toBe("invalid path")
         })
+    })
+})
+
+describe("/api", () => {
+    test("200: GET respond with an object describing all available end points", () => {
+       return request(app)
+       .get("/api")
+       .expect(200)
+       .then(({body}) => {
+        const endpoints = body.endpoints
+        const endpointsData = fs.readFile(`${__dirname}/../endpoints.json`)
+        return Promise.all([endpoints, endpointsData])
+       })
+       .then(([endpoints, endpointsData]) => {
+        expect(endpoints).toEqual(JSON.parse(endpointsData))
+       })
     })
 })
