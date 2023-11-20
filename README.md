@@ -6,7 +6,6 @@ This an API to mimic a backend service e.g. an online forum. It will be able to 
 
 ## Getting started
 
-1. Fork repository
-2. Clone repository 
-3. Set up the project and install relevant packages: ```npm install```
-4. Connect to the database - you will need to create two files: .env.test and .env.development. Add to each file ```PGDATABASE= <name_of_database>``` . The database name can be found in /db/setup.sql.
+1. Clone repository 
+2. Set up the project and install relevant packages: ```npm install```
+3. Connect to the database - you will need to create two files: .env.test and .env.development. Add to each file ```PGDATABASE= <name_of_database>``` . The database name can be found in /db/setup.sql.
