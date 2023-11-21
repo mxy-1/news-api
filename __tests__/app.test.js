@@ -117,7 +117,6 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(201)
         .then(({body}) => {
             const comment = body.comment
-            // console.log(comment)
             expect(typeof comment.comment_id).toBe("number")
             expect(typeof comment.body).toBe("string")
             expect(comment.article_id).toBe(2)
@@ -148,16 +147,16 @@ describe("/api/articles/:article_id/comments", () => {
             expect(body.msg).toBe("bad request")
         })
     })
-    // test.only("POST: 400 responds with bad request when username does not exist", () => {
-    //     return request(app)
-    //     .post("/api/articles/2/comments")
-    //     .send({
-    //         username: "nolurk",
-    //         body: "awful",
-    //     })
-    //     .expect(400)
-    //     .then(({body}) => {
-    //         expect(body.msg).toBe("bad request")
-    //     })
-    // })
+    test("POST: 400 responds with bad request when username does not exist", () => {
+        return request(app)
+        .post("/api/articles/2/comments")
+        .send({
+            username: "nolurk",
+            body: "awful",
+        })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
 })

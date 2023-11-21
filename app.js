@@ -23,20 +23,5 @@ app.use(serverError)
 
 module.exports = app
 
-// Should:
-
-// be available on /api/articles/:article_id/comments.
-// add a comment for an article.
-// Request body accepts:
-
-// an object with the following properties:
-// username
-// body
-// Responds with:
-
-// the posted comment.
 
 
-
-
-// author does not exist

@@ -25,9 +25,9 @@ exports.postCommentById = (req, res, next) => {
     if (!body || !username) {
         res.status(400).send({msg: "bad request"})
     }
-    
+
     postComment(article_id, username, body)
-    .then((comment) => {
+    .then(comment => {
         res.status(201).send({comment})
     })
     .catch(next)
