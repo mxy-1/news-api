@@ -35,6 +35,8 @@ exports.postComment = (id, username, body) => {
     RETURNING *;`,
     [id, username, body])
     .then(result => {
+        console.log(result, "no username")
         return result.rows[0]
     })
+    
 }
