@@ -1,5 +1,5 @@
 const { checkExists } = require("../app-utils")
-const { selectArticleById, selectArticleComments } = require("../models/articles.models")
+const { selectArticleById, selectArticleComments, selectAllArticles } = require("../models/articles.models")
 
 exports.getArticleById = (req, res, next) => {
     const {article_id} = req.params
@@ -18,6 +18,13 @@ exports.getArticleComments = (req, res, next) => {
     .then((resolvedPromise) => {
         const comments = resolvedPromise[0]
         res.status(200).send({comments})
+    })
+    .catch(next)
+}
+exports.getAllArticles = (req, res, next) => {
+    selectAllArticles()
+    .then((articles) => {
+        res.status(200).send({articles})
     })
     .catch(next)
 }
