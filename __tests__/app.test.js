@@ -81,3 +81,14 @@ describe("/api/articles/:article_id", () => {
         })
     })
 })
+
+// describe("/api/articles/:article_id/comments", () => {
+//     test("200: GET responds with an array of comments for a given article id, with most recent comment first", () => {
+//         return request(app)
+//         .get("/api/articles/1/comments")
+//         .expect(200)
+//         .then(({body}) => {
+//             const comments = body.comments
+//         })
+//     })
+// })
