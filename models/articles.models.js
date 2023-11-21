@@ -13,3 +13,18 @@ exports.selectArticleById = (id) => {
         }
     })
 }
+
+exports.selectArticleComments = (article_id) => {
+    return db.query(`
+    SELECT c.comment_id, c.votes, c.author, a.article_id, c.body, c.created_at 
+    FROM articles a 
+    JOIN comments c 
+    ON a.article_id = c.article_id 
+    WHERE a.article_id = $1 
+    ORDER BY c.created_at DESC;
+    `, [article_id])
+    .then(result => {
+        return result.rows
+    })
+
+}
