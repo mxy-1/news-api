@@ -141,4 +141,12 @@ describe("/api/articles/:article_id/comments", () => {
             expect(response.body.msg).toBe("not found")
         })
     })
+    test("400: GET responds with error message when given an invalid article_id", () => {
+        return request(app)
+        .get("/api/articles/baddd/comments")
+        .expect(400)
+        .then(response => {
+            expect(response.body.msg).toBe("bad request")
+        })
+    })
 })

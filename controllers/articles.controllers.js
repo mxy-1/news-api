@@ -12,6 +12,11 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getArticleComments = (req, res, next) => {
     const {article_id} = req.params
+
+    if (! +article_id) {
+        res.status(400).send({msg: "bad request"})
+    }
+
     const commentsPromise = [selectArticleComments(article_id), checkExists("articles", "article_id",article_id )]
  
     Promise.all(commentsPromise)
@@ -21,6 +26,7 @@ exports.getArticleComments = (req, res, next) => {
     })
     .catch(next)
 }
+
 exports.getAllArticles = (req, res, next) => {
     selectAllArticles()
     .then((articles) => {
