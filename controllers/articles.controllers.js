@@ -22,9 +22,10 @@ exports.postCommentById = (req, res, next) => {
     const username = req.body.username
     const body = req.body.body
 
-    // console.log(article_id, "id")
-    // console.log(username, "username")
-    // console.log(body, "body")
+    if (!body || !username) {
+        res.status(400).send({msg: "bad request"})
+    }
+    
     postComment(article_id, username, body)
     .then((comment) => {
         res.status(201).send({comment})

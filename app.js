@@ -38,6 +38,5 @@ module.exports = app
 
 
 
-// Consider what errors could occur with this endpoint, and make sure to test for them.
 
-// Remember to add a description of this endpoint to your /api endpoint.
+// author does not exist

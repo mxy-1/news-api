@@ -117,7 +117,7 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(201)
         .then(({body}) => {
             const comment = body.comment
-            console.log(comment)
+            // console.log(comment)
             expect(typeof comment.comment_id).toBe("number")
             expect(typeof comment.body).toBe("string")
             expect(comment.article_id).toBe(2)
@@ -126,4 +126,38 @@ describe("/api/articles/:article_id/comments", () => {
             expect(typeof comment.created_at).toBe("string")
         })
     })
+    test("POST: 400 responds with bad request when body not provided or is empty", () => {
+        return request(app)
+        .post("/api/articles/2/comments")
+        .send({
+            username:"lurker"
+        })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
+    test("POST: 400 responds with bad request when username not provided or is empty", () => {
+        return request(app)
+        .post("/api/articles/2/comments")
+        .send({
+            body:"awful"
+        })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
+    // test.only("POST: 400 responds with bad request when username does not exist", () => {
+    //     return request(app)
+    //     .post("/api/articles/2/comments")
+    //     .send({
+    //         username: "nolurk",
+    //         body: "awful",
+    //     })
+    //     .expect(400)
+    //     .then(({body}) => {
+    //         expect(body.msg).toBe("bad request")
+    //     })
+    // })
 })
