@@ -75,7 +75,19 @@
         "author": "lurker",
         "votes": 0,
         "created_at": "2023-11-21T14:48:28.523Z"
-      }
+      }}},
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves a comments array with all comments for a specified article id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [{
+        "comment_id": 16,
+        "votes": 1,
+        "author": "butter_bridge",
+        "article_id": 6,
+        "body": "This is a bad article name",
+        "created_at": "2020-10-11T15:23:00.000Z"
+      }]
     }
   }
 }
