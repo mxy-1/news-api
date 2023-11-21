@@ -105,3 +105,48 @@ describe("/api/articles", () => {
             })
     })
 })
+
+describe("/api/articles/:article_id/comments", () => {
+    test("200: GET responds with an array of comments for a given article id, with most recent comment first", () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({body}) => {
+            const commentsArray = body.comments
+            expect(commentsArray.length).toBe(11)
+            expect(commentsArray).toBeSortedBy("created_at",  { descending: true })
+            commentsArray.forEach(comment => {
+                expect(typeof comment.comment_id).toBe("number")
+                expect(typeof comment.votes).toBe("number")
+                expect(typeof comment.created_at).toBe("string")
+                expect(typeof comment.author).toBe("string")
+                expect(typeof comment.body).toBe("string")
+                expect(typeof comment.article_id).toBe("number")
+            })
+        })
+    })
+    test("200: GET responds with an empty when given an article id thats exists but has no comments", () => {
+        return request(app)
+        .get("/api/articles/11/comments")
+        .expect(200)
+        .then(response => {
+            expect(response.body.comments).toEqual([])
+        })
+    })
+    test("404: GET responds with error message when given an article id that does not exist", () => {
+        return request(app)
+        .get("/api/articles/99/comments")
+        .expect(404)
+        .then(response => {
+            expect(response.body.msg).toBe("not found")
+        })
+    })
+    test("400: GET responds with error message when given an invalid article_id", () => {
+        return request(app)
+        .get("/api/articles/baddd/comments")
+        .expect(400)
+        .then(response => {
+            expect(response.body.msg).toBe("bad request")
+        })
+    })
+})
