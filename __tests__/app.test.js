@@ -105,3 +105,25 @@ describe("/api/articles", () => {
             })
     })
 })
+
+describe("/api/articles/:article_id/comments", () => {
+    test("POST: 201 responds with posted comment object", () => {
+        return request(app)
+        .post("/api/articles/2/comments")
+        .send({
+            username: "lurker",
+            body: "awful",
+        })
+        .expect(201)
+        .then(({body}) => {
+            const comment = body.comment
+            console.log(comment)
+            expect(typeof comment.comment_id).toBe("number")
+            expect(typeof comment.body).toBe("string")
+            expect(comment.article_id).toBe(2)
+            expect(comment.author).toBe("lurker")
+            expect(comment.votes).toBe(0)
+            expect(typeof comment.created_at).toBe("string")
+        })
+    })
+})
