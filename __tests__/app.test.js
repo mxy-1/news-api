@@ -153,6 +153,57 @@ describe("/api/articles", () => {
 })
 
 describe("/api/articles/:article_id/comments", () => {
+    test("POST: 201 responds with posted comment object", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                username: "lurker",
+                body: "awful",
+            })
+            .expect(201)
+            .then(({ body }) => {
+                const comment = body.comment
+                expect(typeof comment.comment_id).toBe("number")
+                expect(typeof comment.body).toBe("string")
+                expect(comment.article_id).toBe(2)
+                expect(comment.author).toBe("lurker")
+                expect(comment.votes).toBe(0)
+                expect(typeof comment.created_at).toBe("string")
+            })
+    })
+    test("POST: 400 responds with bad request when body not provided or is empty", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                username: "lurker"
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("POST: 400 responds with bad request when username not provided or is empty", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                body: "awful"
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("POST: 400 responds with bad request when username does not exist", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                username: "nolurk",
+                body: "awful",
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })})
     test("200: GET responds with an array of comments for a given article id, with most recent comment first", () => {
         return request(app)
             .get("/api/articles/1/comments")
@@ -194,5 +245,24 @@ describe("/api/articles/:article_id/comments", () => {
             .then(response => {
                 expect(response.body.msg).toBe("bad request")
             })
+    })
+})
+
+describe("/api/users", () => {
+    test("200: GET responds with an array of user objects", () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(response => {
+            const usersArray = response.body.users
+            expect(usersArray.length).toBe(4)
+            usersArray.forEach(user => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
+        })
     })
 })

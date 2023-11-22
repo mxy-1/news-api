@@ -1,5 +1,6 @@
+
 const { checkExists } = require("../app-utils")
-const { selectArticleById, selectArticleComments, selectAllArticles, patchVotes } = require("../models/articles.models")
+const { selectArticleById, selectArticleComments, selectAllArticles, patchVotes, postComment } = require("../models/articles.models")
 
 exports.getArticleById = (req, res, next) => {
     const {article_id} = req.params
@@ -47,6 +48,21 @@ exports.patchArticleVotes = (req, res, next) => {
     .then((article) => {
         if (! article) res.status(404).send({msg: "not found"})
         res.status(200).send({article})
+    })
+    .catch(next)
+}
+exports.postCommentById = (req, res, next) => {
+    const article_id = req.params.article_id
+    const username = req.body.username
+    const body = req.body.body
+
+    if (!body || !username) {
+        res.status(400).send({msg: "bad request"})
+    }
+
+    postComment(article_id, username, body)
+    .then(comment => {
+        res.status(201).send({comment})
     })
     .catch(next)
 }
