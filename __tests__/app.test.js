@@ -150,3 +150,30 @@ describe("/api/articles/:article_id/comments", () => {
         })
     })
 })
+
+describe("/api/comments/:comment_id", () => {
+    test("204: DELETE responds with no content and delete comment by comment id", () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .expect(204)  
+    })
+    // test("404: DELETE responds with not found when given a valid exist that does not exist", () => {
+    //     return request(app)
+    //     .delete("/api/comments/111")
+    //     .expect(404)
+    //     .then(response => {
+    //         expect(response.body.msg).toBe("not found")
+    //     })  
+    // })
+    // test("400: DELETE responds with bad request when given an invalid id", () => {
+    //     return request(app)
+    //     .delete("/api/comments/badd")
+    //     .expect(400)
+    //     .then(response => {
+    //         expect(response.body.msg).toBe("bad request")
+    //     })  
+    // })
+
+    // 999 - id does not exist - 404
+    // wordd - id not valid - 400
+})
