@@ -38,3 +38,16 @@ exports.selectAllArticles = () => {
         return result.rows
     })
 }
+
+exports.postComment = (id, username, body) => {
+    return db.query(`
+    INSERT INTO comments
+    (article_id, author, body)
+    VALUES
+    ($1, $2, $3)
+    RETURNING *;`,
+    [id, username, body])
+    .then(result => {
+        return result.rows[0]
+    })
+}
