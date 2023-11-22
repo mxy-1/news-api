@@ -30,7 +30,7 @@ exports.selectArticleComments = (article_id) => {
 exports.selectAllArticles = () => {
     return db.query(`
     SELECT a.author, a.article_id, a.title, a.topic, a.created_at, a.votes, a. article_img_url, count(a.article_id) as comment_count from articles a 
-    JOIN comments
+    LEFT JOIN comments
     ON a.article_id = comments.article_id 
     GROUP BY a.article_id
     ORDER BY created_at DESC;`)

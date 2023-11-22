@@ -88,7 +88,7 @@ describe("/api/articles", () => {
             .expect(200)
             .then(({ body }) => {
                 const articles = body.articles
-                expect(articles.length).toBe(5)
+                expect(articles.length).toBe(13)
                 articles.forEach(article => {
                     expect(article).toMatchObject({
                         article_id: expect.any(Number),
@@ -104,6 +104,15 @@ describe("/api/articles", () => {
                 expect(articles).toBeSortedBy("created_at", { descending: true })
             })
     })
+
+    // test("200:GET accepts a topic query and responds with and array of filtered articles", () => {
+    //     return request(app)
+    //     .get("/api/articles/?topic=mitch")
+    //     .expect(200)
+    //     .then(({body}) => {
+    //         const articlesArray = body.articles
+    //     })
+    // })
 })
 
 describe("/api/articles/:article_id/comments", () => {
