@@ -3,6 +3,7 @@ const { getAllTopics } = require("./controllers/topics.controllers")
 const { serverError, invalidPath, customError } = require("./errors")
 const { getApi } = require("./controllers/api.controllers")
 const { getArticleById, getArticleComments,getAllArticles } = require("./controllers/articles.controllers")
+const { getAllUsers } = require("./controllers/users.controllers")
 
 const app = express()
 
@@ -12,11 +13,11 @@ app.get("/api/articles/:article_id", getArticleById )
 app.get("/api/articles/:article_id/comments", getArticleComments)
 app.get("/api/articles", getAllArticles)
 
+app.get("/api/users", getAllUsers)
 app.all("*", invalidPath)
 
 app.use(customError)
 app.use(serverError)
-
 
 
 module.exports = app
