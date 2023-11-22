@@ -105,14 +105,37 @@ describe("/api/articles", () => {
             })
     })
 
-    // test("200:GET accepts a topic query and responds with and array of filtered articles", () => {
-    //     return request(app)
-    //     .get("/api/articles/?topic=mitch")
-    //     .expect(200)
-    //     .then(({body}) => {
-    //         const articlesArray = body.articles
-    //     })
-    // })
+    test("200: GET accepts a topic query and responds with and array of filtered articles", () => {
+        return request(app)
+        .get("/api/articles/?topic=mitch")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles.length).toBe(12)
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+                expect(article.topic).toBe("mitch")
+            })
+        })
+    })
+
+    test("200: GET accepts a topic query and responds with an empty array when there no articles associated with topic", () => {
+        return request(app)
+        .get("/api/articles/?topic=paper")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toEqual([])
+        })
+    })
 })
 
 describe("/api/articles/:article_id/comments", () => {

@@ -1,3 +1,4 @@
+const { request } = require("../app")
 const { checkExists } = require("../app-utils")
 const { selectArticleById, selectArticleComments, selectAllArticles } = require("../models/articles.models")
 
@@ -28,7 +29,8 @@ exports.getArticleComments = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    selectAllArticles()
+    const {topic} = req.query
+    selectAllArticles(topic)
     .then((articles) => {
         res.status(200).send({articles})
     })
