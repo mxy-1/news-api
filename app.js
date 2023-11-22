@@ -20,17 +20,6 @@ app.all("*", invalidPath)
 app.use(customError)
 app.use(serverError)
 
-// Should:
-
-// be available on /api/articles/:article_id.
-// update an article by article_id.
-
-
-// Consider what errors could occur with this endpoint, and make sure to test for them.
-
-// bad article id e.g. bnanaa
-// article id doesn't exist e.g 99 - 400
-// invalid votes e.g. cat - 400
 
 // Remember to add a description of this endpoint to your /api endpoint.
 

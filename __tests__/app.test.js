@@ -80,51 +80,51 @@ describe("/api/articles/:article_id", () => {
             })
     })
 
-    // test("200: PATCH responds with updated article object", () => {
-    //     return request(app)
-    //         .patch("/api/articles/2")
-    //         .send({ inc_votes: 10 })
-    //         .expect(200)
-    //         .then(({ body }) => {
-    //             expect(body.article).toMatchObject({
-    //                 article_id: 2,
-    //                 title: expect.any(String),
-    //                 topic: expect.any(String),
-    //                 author: expect.any(String),
-    //                 body: expect.any(String),
-    //                 created_at: expect.any(String),
-    //                 votes: 10,
-    //                 article_img_url: expect.any(String),
-    //             })
-    //         })
-    // })
-    // test("400: PATCH responds with bad request if article_id is invalid", () => {
-    //     return request(app)
-    //         .patch("/api/articles/baddd")
-    //         .send({ inc_votes: 10 })
-    //         .expect(400)
-    //         .then(({ body }) => {
-    //             expect(body.msg).toBe("bad request")
-    //         })
-    // })
-    // test("400: PATCH responds with bad request if article does not exist", () => {
-    //     return request(app)
-    //         .patch("/api/articles/99")
-    //         .send({ inc_votes: 10 })
-    //         .expect(400)
-    //         .then(({ body }) => {
-    //             expect(body.msg).toBe("bad request")
-    //         })
-    // })
-    // test("400: PATCH responds with bad request if invalid votes", () => {
-    //     return request(app)
-    //         .patch("/api/articles/2")
-    //         .send({ inc_votes: "cat" })
-    //         .expect(400)
-    //         .then(({ body }) => {
-    //             expect(body.msg).toBe("bad request")
-    //         })
-    // })
+    test("200: PATCH responds with updated article object", () => {
+        return request(app)
+            .patch("/api/articles/3")
+            .send({ inc_votes: 10 })
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toMatchObject({
+                    article_id: 3,
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 10,
+                    article_img_url: expect.any(String),
+                })
+            })
+    })
+    test("400: PATCH responds with bad request if article_id is invalid", () => {
+        return request(app)
+            .patch("/api/articles/baddd")
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("400: PATCH responds with bad request if article does not exist", () => {
+        return request(app)
+            .patch("/api/articles/99")
+            .send({ inc_votes: 10 })
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("not found")
+            })
+    })
+    test("400: PATCH responds with bad request if invalid votes", () => {
+        return request(app)
+            .patch("/api/articles/2")
+            .send({ inc_votes: "cat" })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
 })
 
 describe("/api/articles", () => {
