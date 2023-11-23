@@ -39,6 +39,17 @@ exports.selectAllArticles = () => {
     })
 }
 
+exports.patchVotes = (id, votes) => {
+    return db.query(`
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = ${id}
+    RETURNING *;`,
+    [votes])
+    .then(result => {
+        return result.rows[0]
+    })
+}
 exports.postComment = (id, username, body) => {
     return db.query(`
     INSERT INTO comments

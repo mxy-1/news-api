@@ -1,6 +1,6 @@
 
 const { checkExists } = require("../app-utils")
-const { selectArticleById, selectArticleComments, selectAllArticles, postComment } = require("../models/articles.models")
+const { selectArticleById, selectArticleComments, selectAllArticles, patchVotes, postComment } = require("../models/articles.models")
 
 exports.getArticleById = (req, res, next) => {
     const {article_id} = req.params
@@ -36,6 +36,18 @@ exports.getAllArticles = (req, res, next) => {
     .catch(next)
 }
 
+exports.patchArticleVotes = (req, res, next) => {   
+    const {article_id} = req.params
+    const votes = req.body.inc_votes
+    const articlesPromise = [patchVotes(article_id, votes), checkExists("articles", "article_id", article_id )]
+
+    Promise.all(articlesPromise)
+    .then(resolvedPromise => {
+        const article = resolvedPromise[0]
+        res.status(200).send({article})
+    })
+    .catch(next)
+}
 exports.postCommentById = (req, res, next) => {
     const article_id = req.params.article_id
     const username = req.body.username
