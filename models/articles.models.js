@@ -1,10 +1,12 @@
 const db = require("../db/connection")
 
 exports.selectArticleById = (id) => {
-    return db.query(`
-    SELECT *
-    FROM articles
-    WHERE article_id = $1`, [id])
+    return db.query(`SELECT a.*, count(c.comment_id) as comment_count
+    FROM articles a 
+    LEFT JOIN comments c
+    ON a.article_id = c.article_id
+    WHERE a.article_id = $1
+    GROUP BY a.article_id`, [id])
     .then(result => {
         if (! result.rows.length) {
             return Promise.reject({status:404, msg: "article does not exist" })
@@ -30,16 +32,17 @@ exports.selectArticleComments = (article_id) => {
 exports.selectAllArticles = (topic) => {
     const queryValues = []
     let queryString = `
-    SELECT a.author, a.article_id, a.title, a.topic, a.created_at, a.votes, a. article_img_url, count(a.article_id) as comment_count from articles a 
-    LEFT JOIN comments
-    ON a.article_id = comments.article_id `
+    SELECT a.author, a.article_id, a.title, a.topic, a.created_at, a.votes, a. article_img_url, count(c.comment_id) as comment_count 
+    FROM articles a 
+    LEFT JOIN comments c
+    ON a.article_id = c.article_id `
 
     if (topic) {
         queryValues.push(topic)
         queryString += `WHERE topic = $1 `
     }
 
-    queryString += "GROUP BY a.article_id ORDER BY created_at DESC"
+    queryString += "GROUP BY a.article_id ORDER BY a.created_at DESC"
 
     return db.query(queryString, queryValues)
     .then(result => {

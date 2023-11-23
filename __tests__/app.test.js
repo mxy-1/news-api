@@ -71,6 +71,16 @@ describe("/api/articles/:article_id", () => {
                 })
             })
     })
+    test("200: GET responds with an article object with a comment_count property", () => {
+        return request(app)
+            .get("/api/articles/2")
+            .expect(200)
+            .then(({ body }) => {
+                const article = body.article
+                expect(+article.comment_count).toBe(0)
+            })
+    })
+    
     test("404: GET responds with error message when given an id that does not exist", () => {
         return request(app)
             .get("/api/articles/99")
