@@ -28,5 +28,10 @@ app.use(serverError)
 
 module.exports = app
 
+// FEATURE REQUEST An article response object should also now include:
+
+// comment_count, which is the total count of all the comments with this article_id. You should make use of queries to the database in order to achieve this.
+
+
 
 

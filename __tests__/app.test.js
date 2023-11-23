@@ -59,6 +59,7 @@ describe("/api/articles/:article_id", () => {
             .expect(200)
             .then(({ body }) => {
                 const article = body.article
+                expect(+article.comment_count).toBe(11)
                 expect(article).toMatchObject({
                     article_id: 1,
                     title: expect.any(String),
