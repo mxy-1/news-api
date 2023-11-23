@@ -79,6 +79,70 @@ describe("/api/articles/:article_id", () => {
                 expect(body.msg).toBe("article does not exist")
             })
     })
+
+    test("200: PATCH responds with updated article object, and increments votes", () => {
+        return request(app)
+            .patch("/api/articles/3")
+            .send({ inc_votes: 10 })
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toMatchObject({
+                    article_id: 3,
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: 10,
+                    article_img_url: expect.any(String),
+                })
+            })
+    })
+    test("200: PATCH responds with updated article object and decrements votes", () => {
+        return request(app)
+            .patch("/api/articles/3")
+            .send({ inc_votes: -10 })
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.article).toMatchObject({
+                    article_id: 3,
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: -10,
+                    article_img_url: expect.any(String),
+                })
+            })
+    })
+    test("400: PATCH responds with bad request if article_id is invalid", () => {
+        return request(app)
+            .patch("/api/articles/baddd")
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("404: PATCH responds with not found if article does not exist", () => {
+        return request(app)
+            .patch("/api/articles/99")
+            .send({ inc_votes: 10 })
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("not found")
+            })
+    })
+    test("400: PATCH responds with bad request if invalid votes", () => {
+        return request(app)
+            .patch("/api/articles/2")
+            .send({ inc_votes: "cat" })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
 })
 
 describe("/api/articles", () => {
@@ -107,46 +171,116 @@ describe("/api/articles", () => {
 })
 
 describe("/api/articles/:article_id/comments", () => {
+    test("POST: 201 responds with posted comment object", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                username: "lurker",
+                body: "awful",
+            })
+            .expect(201)
+            .then(({ body }) => {
+                const comment = body.comment
+                expect(typeof comment.comment_id).toBe("number")
+                expect(typeof comment.body).toBe("string")
+                expect(comment.article_id).toBe(2)
+                expect(comment.author).toBe("lurker")
+                expect(comment.votes).toBe(0)
+                expect(typeof comment.created_at).toBe("string")
+            })
+    })
+    test("POST: 400 responds with bad request when body not provided or is empty", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                username: "lurker"
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("POST: 400 responds with bad request when username not provided or is empty", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                body: "awful"
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("POST: 400 responds with bad request when username does not exist", () => {
+        return request(app)
+            .post("/api/articles/2/comments")
+            .send({
+                username: "nolurk",
+                body: "awful",
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })})
     test("200: GET responds with an array of comments for a given article id, with most recent comment first", () => {
         return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({body}) => {
-            const commentsArray = body.comments
-            expect(commentsArray.length).toBe(11)
-            expect(commentsArray).toBeSortedBy("created_at",  { descending: true })
-            commentsArray.forEach(comment => {
-                expect(typeof comment.comment_id).toBe("number")
-                expect(typeof comment.votes).toBe("number")
-                expect(typeof comment.created_at).toBe("string")
-                expect(typeof comment.author).toBe("string")
-                expect(typeof comment.body).toBe("string")
-                expect(typeof comment.article_id).toBe("number")
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+                const commentsArray = body.comments
+                expect(commentsArray.length).toBe(11)
+                expect(commentsArray).toBeSortedBy("created_at", { descending: true })
+                commentsArray.forEach(comment => {
+                    expect(typeof comment.comment_id).toBe("number")
+                    expect(typeof comment.votes).toBe("number")
+                    expect(typeof comment.created_at).toBe("string")
+                    expect(typeof comment.author).toBe("string")
+                    expect(typeof comment.body).toBe("string")
+                    expect(typeof comment.article_id).toBe("number")
+                })
             })
-        })
     })
     test("200: GET responds with an empty when given an article id thats exists but has no comments", () => {
         return request(app)
-        .get("/api/articles/11/comments")
-        .expect(200)
-        .then(response => {
-            expect(response.body.comments).toEqual([])
-        })
+            .get("/api/articles/11/comments")
+            .expect(200)
+            .then(response => {
+                expect(response.body.comments).toEqual([])
+            })
     })
     test("404: GET responds with error message when given an article id that does not exist", () => {
         return request(app)
-        .get("/api/articles/99/comments")
-        .expect(404)
-        .then(response => {
-            expect(response.body.msg).toBe("not found")
-        })
+            .get("/api/articles/99/comments")
+            .expect(404)
+            .then(response => {
+                expect(response.body.msg).toBe("not found")
+            })
     })
     test("400: GET responds with error message when given an invalid article_id", () => {
         return request(app)
-        .get("/api/articles/baddd/comments")
-        .expect(400)
+            .get("/api/articles/baddd/comments")
+            .expect(400)
+            .then(response => {
+                expect(response.body.msg).toBe("bad request")
+            })
+    })
+})
+
+describe("/api/users", () => {
+    test("200: GET responds with an array of user objects", () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
         .then(response => {
-            expect(response.body.msg).toBe("bad request")
+            const usersArray = response.body.users
+            expect(usersArray.length).toBe(4)
+            usersArray.forEach(user => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            })
         })
     })
 })
