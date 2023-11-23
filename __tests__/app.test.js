@@ -200,6 +200,14 @@ describe("/api/articles", () => {
             expect(articles).toEqual([])
         })
     })
+    test("404: GET accepts a topic query and responds with not found when topic does not exist", () => {
+        return request(app)
+        .get("/api/articles/?topic=bread")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toEqual("not found")
+        })
+    })
 })
 
 describe("/api/articles/:article_id/comments", () => {

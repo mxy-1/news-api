@@ -29,8 +29,15 @@ exports.getArticleComments = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
     const {topic} = req.query
-    selectAllArticles(topic)
-    .then((articles) => {
+    const articlesPromise = [selectAllArticles(topic)]
+
+    if (topic) {
+        articlesPromise.push(checkExists("topics", "slug", topic))
+    }
+
+    Promise.all(articlesPromise)
+    .then(resolvedPromise => {
+        const articles = resolvedPromise[0]
         res.status(200).send({articles})
     })
     .catch(next)
