@@ -28,8 +28,12 @@ exports.getArticleComments = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    const {topic} = req.query
-    const articlesPromise = [selectAllArticles(topic)]
+    const {topic, sort_by, order} = req.query
+   
+    
+    const articlesPromise = [selectAllArticles(topic, sort_by, order)]
+
+    
 
     if (topic) {
         articlesPromise.push(checkExists("topics", "slug", topic))

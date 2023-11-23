@@ -218,10 +218,155 @@ describe("/api/articles", () => {
             expect(body.msg).toEqual("not found")
         })
     })
+//----------------------------here------------------------
+    test("200: GET accepts a sort_by query and responds with array of articles sorted by query - article_id", () => {
+        return request(app)
+        .get("/api/articles/?sort_by=article_id")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toBeSortedBy("article_id", { descending: true })
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+            })
+        })
+    })
+    test("200: GET accepts a sort_by query and responds with array of articles sorted by query - author", () => {
+        return request(app)
+        .get("/api/articles/?sort_by=author")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toBeSortedBy("author", { descending: true })
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+            })
+        })
+    })
+    test("400: GET responds with bad request when sort by query does not exist", () => {
+        return request(app)
+        .get("/api/articles/?sort_by=pppp")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
+
+    test("200: GET accepts an order query which can be set to asc for ascending", () => {
+        return request(app)
+        .get("/api/articles/?order=asc")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toBeSortedBy("created_at", { descending: false })
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+            })
+        })
+    })
+    test("200: GET accepts an order query which can be set to desc for descending", () => {
+        return request(app)
+        .get("/api/articles/?order=desc")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toBeSortedBy("created_at", { descending: true })
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+            })
+        })
+    })
+    test("400: GET responds with bad request when order query is invalid", () => {
+        return request(app)
+        .get("/api/articles/?order=invalidquery")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
+
+    test("200: GET accepts multiples queries including sort by and order", () => {
+        return request(app)
+        .get("/api/articles/?order=asc&sort_by=author")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toBeSortedBy("author", { descending: false })
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+            })
+        })
+    })
+    test("200: GET accepts all queries: topic, sort by and order", () => {
+        return request(app)
+        .get("/api/articles/?order=desc&sort_by=title&topic=mitch")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toBeSortedBy("title", { descending: true })
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: "mitch",
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+            })
+        })
+    })
 })
 
 describe("/api/articles/:article_id/comments", () => {
-    test("POST: 201 responds with posted comment object", () => {
+    test("201: POST responds with posted comment object", () => {
         return request(app)
             .post("/api/articles/2/comments")
             .send({
@@ -239,7 +384,7 @@ describe("/api/articles/:article_id/comments", () => {
                 expect(typeof comment.created_at).toBe("string")
             })
     })
-    test("POST: 400 responds with bad request when body not provided or is empty", () => {
+    test("400: POST responds with bad request when body not provided or is empty", () => {
         return request(app)
             .post("/api/articles/2/comments")
             .send({
@@ -250,7 +395,7 @@ describe("/api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("bad request")
             })
     })
-    test("POST: 400 responds with bad request when username not provided or is empty", () => {
+    test("400: POST responds with bad request when username not provided or is empty", () => {
         return request(app)
             .post("/api/articles/2/comments")
             .send({
@@ -261,7 +406,7 @@ describe("/api/articles/:article_id/comments", () => {
                 expect(body.msg).toBe("bad request")
             })
     })
-    test("POST: 400 responds with bad request when username does not exist", () => {
+    test("400: POST responds with bad request when username does not exist", () => {
         return request(app)
             .post("/api/articles/2/comments")
             .send({

@@ -29,7 +29,14 @@ exports.selectArticleComments = (article_id) => {
         return result.rows
     })
 }
-exports.selectAllArticles = (topic) => {
+exports.selectAllArticles = (topic, sort_by="created_at", order="desc") => {
+    const sortByCategories = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url"]
+    const orderCategories = ["desc", "asc"]
+
+    if (!sortByCategories.includes(sort_by.toLowerCase()) || !orderCategories.includes(order.toLowerCase())) {
+        return Promise.reject({status: 400, msg: "bad request"})
+    }
+
     const queryValues = []
     let queryString = `
     SELECT a.author, a.article_id, a.title, a.topic, a.created_at, a.votes, a. article_img_url, count(c.comment_id) as comment_count 
@@ -42,7 +49,7 @@ exports.selectAllArticles = (topic) => {
         queryString += `WHERE topic = $1 `
     }
 
-    queryString += "GROUP BY a.article_id ORDER BY a.created_at DESC"
+    queryString += `GROUP BY a.article_id ORDER BY a.${sort_by} ${order}`
 
     return db.query(queryString, queryValues)
     .then(result => {
