@@ -152,7 +152,7 @@ describe("/api/articles", () => {
             .expect(200)
             .then(({ body }) => {
                 const articles = body.articles
-                expect(articles.length).toBe(5)
+                expect(articles.length).toBe(13)
                 articles.forEach(article => {
                     expect(article).toMatchObject({
                         article_id: expect.any(Number),
@@ -167,6 +167,46 @@ describe("/api/articles", () => {
                 })
                 expect(articles).toBeSortedBy("created_at", { descending: true })
             })
+    })
+
+    test("200: GET accepts a topic query and responds with and array of filtered articles", () => {
+        return request(app)
+        .get("/api/articles/?topic=mitch")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles.length).toBe(12)
+            articles.forEach(article => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                })
+                expect(typeof +article.comment_count).toBe("number")
+                expect(article.topic).toBe("mitch")
+            })
+        })
+    })
+
+    test("200: GET accepts a topic query and responds with an empty array when there no articles associated with topic", () => {
+        return request(app)
+        .get("/api/articles/?topic=paper")
+        .expect(200)
+        .then(({body}) => {
+            const articles = body.articles
+            expect(articles).toEqual([])
+        })
+    })
+    test("404: GET accepts a topic query and responds with not found when topic does not exist", () => {
+        return request(app)
+        .get("/api/articles/?topic=bread")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toEqual("not found")
+        })
     })
 })
 

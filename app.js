@@ -13,7 +13,7 @@ app.get("/api/topics", getAllTopics)
 app.get("/api", getApi)
 app.get("/api/articles/:article_id", getArticleById )
 app.get("/api/articles/:article_id/comments", getArticleComments)
-app.get("/api/articles", getAllArticles)
+app.get("/api/articles/", getAllArticles)
 
 app.delete("/api/comments/:comment_id", deleteCommentById)
 app.patch("/api/articles/:article_id", patchArticleVotes)
@@ -25,9 +25,6 @@ app.all("*", invalidPath)
 
 app.use(customError)
 app.use(serverError)
-
-
-// Remember to add a description of this endpoint to your /api endpoint.
 
 module.exports = app
 

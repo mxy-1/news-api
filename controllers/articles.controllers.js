@@ -1,4 +1,3 @@
-
 const { checkExists } = require("../app-utils")
 const { selectArticleById, selectArticleComments, selectAllArticles, patchVotes, postComment } = require("../models/articles.models")
 
@@ -29,8 +28,16 @@ exports.getArticleComments = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    selectAllArticles()
-    .then((articles) => {
+    const {topic} = req.query
+    const articlesPromise = [selectAllArticles(topic)]
+
+    if (topic) {
+        articlesPromise.push(checkExists("topics", "slug", topic))
+    }
+
+    Promise.all(articlesPromise)
+    .then(resolvedPromise => {
+        const articles = resolvedPromise[0]
         res.status(200).send({articles})
     })
     .catch(next)

@@ -27,13 +27,21 @@ exports.selectArticleComments = (article_id) => {
         return result.rows
     })
 }
-exports.selectAllArticles = () => {
-    return db.query(`
+exports.selectAllArticles = (topic) => {
+    const queryValues = []
+    let queryString = `
     SELECT a.author, a.article_id, a.title, a.topic, a.created_at, a.votes, a. article_img_url, count(a.article_id) as comment_count from articles a 
-    JOIN comments
-    ON a.article_id = comments.article_id 
-    GROUP BY a.article_id
-    ORDER BY created_at DESC;`)
+    LEFT JOIN comments
+    ON a.article_id = comments.article_id `
+
+    if (topic) {
+        queryValues.push(topic)
+        queryString += `WHERE topic = $1 `
+    }
+
+    queryString += "GROUP BY a.article_id ORDER BY created_at DESC"
+
+    return db.query(queryString, queryValues)
     .then(result => {
         return result.rows
     })
