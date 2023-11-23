@@ -39,14 +39,11 @@ exports.getAllArticles = (req, res, next) => {
 exports.patchArticleVotes = (req, res, next) => {   
     const {article_id} = req.params
     const votes = req.body.inc_votes
+    const articlesPromise = [patchVotes(article_id, votes), checkExists("articles", "article_id", article_id )]
 
-    if (! +votes) {
-        res.status(400).send({msg: "bad request"})
-    }
-
-    patchVotes(article_id, votes)
-    .then((article) => {
-        if (! article) res.status(404).send({msg: "not found"})
+    Promise.all(articlesPromise)
+    .then(resolvedPromise => {
+        const article = resolvedPromise[0]
         res.status(200).send({article})
     })
     .catch(next)

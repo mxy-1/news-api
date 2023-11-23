@@ -1,6 +1,5 @@
 exports.customError = (err, req, res, next) => {
-
-    if (err.code === "23503" || err.code === "42703") {
+    if (err.code === "23503" || err.code === "42703" || err.code === "22P02") {
         res.status(400).send({msg: "bad request"})
     }
     else if (err.status && err.msg) {
