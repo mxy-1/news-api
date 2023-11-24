@@ -99,7 +99,6 @@ exports.postNewArticle = (article) => {
         .then((result) => {
             const article = result.rows[0]
             article.comment_count = 0
-           
             return article
         })
 }

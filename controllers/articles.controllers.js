@@ -77,9 +77,6 @@ exports.postCommentById = (req, res, next) => {
 
 exports.postArticle = (req, res, next) => {
     const article = req.body
-
-  
-    
     postNewArticle(article)
     .then(article => res.status(201).send({article}))
     .catch(next)
