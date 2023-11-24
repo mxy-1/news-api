@@ -230,5 +230,21 @@
         }
       ]
     }
-  }
+  },
+  "POST /api/articles": {
+    "description": "accepts object with the properties: author, title, body, topic, and serves newly added article",
+    "queries": [],
+    "exampleDefaultResponse": {
+      "article": {
+        "article_id": 15,
+        "title": "Living",
+        "topic": "mitch",
+        "body": "good", 
+        "author": "butter_bridge",
+        "created_at": 1594329060000,
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/",
+        "count_comment": 0
+      }
+    }}
 }

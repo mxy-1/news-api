@@ -218,7 +218,7 @@ describe("/api/articles", () => {
                 expect(body.msg).toEqual("not found")
             })
     })
-    //----------------------------here------------------------
+
     test("200: GET accepts a sort_by query and responds with array of articles sorted by query - article_id", () => {
         return request(app)
             .get("/api/articles/?sort_by=article_id")
@@ -361,6 +361,97 @@ describe("/api/articles", () => {
                     })
                     expect(typeof +article.comment_count).toBe("number")
                 })
+            })
+    })
+
+    test("201: POST accepts an object and responds with newly added article", () => {
+        return request(app)
+            .post("/api/articles")
+            .send({
+                author: "lurker",
+                title: "water",
+                body: "this is the body",
+                topic: "mitch",
+                article_img_url: "https://images.pexels.com/photos/bubuibu"
+            })
+            .expect(201)
+            .then(({ body }) => {
+                const { article } = body
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    body: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: 0
+                })
+            })
+    })
+    test("201: POST accepts an object and responds with newly added article and article_img_url defaults when not provided", () => {
+        return request(app)
+            .post("/api/articles")
+            .send({
+                author: "lurker",
+                title: "water",
+                body: "this is the body",
+                topic: "mitch",
+            })
+            .expect(201)
+            .then(({ body }) => {
+                const { article } = body
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    body: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: 0
+                })
+            })
+    })
+    test("400: POST responds with bad request when missing properties", () => {
+        return request(app)
+            .post("/api/articles")
+            .send({
+                author: "lurker",
+                title: "water",
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+
+    })
+    test("400: POST responds with bad request when properties are not valid", () => {
+        return request(app)
+            .post("/api/articles")
+            .send({
+                dasf: "lurker",
+                saasd: "water",
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("400: POST responds with bad request when values are not valid", () => {
+        return request(app)
+            .post("/api/articles")
+            .send({
+                author: 213213,
+                title: "water",
+                body: "this is the body",
+                topic: "mitch",
+            })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
             })
     })
 })
@@ -531,7 +622,7 @@ describe("/api/comments/:comment_id", () => {
             .send({ inc_votes: 10 })
             .expect(200)
             .then(({ body }) => {
-                const {comment} = body
+                const { comment } = body
                 expect(comment).toMatchObject({
                     comment_id: expect.any(Number),
                     body: expect.any(String),
@@ -548,7 +639,7 @@ describe("/api/comments/:comment_id", () => {
             .send({ inc_votes: -10 })
             .expect(200)
             .then(({ body }) => {
-                const {comment} = body
+                const { comment } = body
                 expect(comment).toMatchObject({
                     comment_id: expect.any(Number),
                     body: expect.any(String),
@@ -564,7 +655,7 @@ describe("/api/comments/:comment_id", () => {
             .patch("/api/comments/999")
             .send({ inc_votes: 10 })
             .expect(404)
-            .then(({body}) => {
+            .then(({ body }) => {
                 expect(body.msg).toBe("not found")
             })
     })
@@ -573,25 +664,25 @@ describe("/api/comments/:comment_id", () => {
             .patch("/api/comments/asd")
             .send({ inc_votes: 10 })
             .expect(400)
-            .then(({body}) => {
+            .then(({ body }) => {
                 expect(body.msg).toBe("bad request")
             })
     })
     test("400: PATCH responds with bad request when missing inc_votes", () => {
         return request(app)
             .patch("/api/comments/2")
-            .send({dfa:22})
+            .send({ dfa: 22 })
             .expect(400)
-            .then(({body}) => {
+            .then(({ body }) => {
                 expect(body.msg).toBe("bad request")
             })
     })
     test("400: PATCH responds with bad request when invalid inc_votes value", () => {
         return request(app)
             .patch("/api/comments/2")
-            .send({inc_votes: "asd"})
+            .send({ inc_votes: "asd" })
             .expect(400)
-            .then(({body}) => {
+            .then(({ body }) => {
                 expect(body.msg).toBe("bad request")
             })
     })

@@ -7,13 +7,13 @@ exports.selectArticleById = (id) => {
     ON a.article_id = c.article_id
     WHERE a.article_id = $1
     GROUP BY a.article_id`, [id])
-    .then(result => {
-        if (! result.rows.length) {
-            return Promise.reject({status:404, msg: "article does not exist" })
-        } else {
-            return result.rows[0]
-        }
-    })
+        .then(result => {
+            if (!result.rows.length) {
+                return Promise.reject({ status: 404, msg: "article does not exist" })
+            } else {
+                return result.rows[0]
+            }
+        })
 }
 
 exports.selectArticleComments = (article_id) => {
@@ -25,16 +25,16 @@ exports.selectArticleComments = (article_id) => {
     WHERE a.article_id = $1 
     ORDER BY c.created_at DESC;
     `, [article_id])
-    .then(result => {
-        return result.rows
-    })
+        .then(result => {
+            return result.rows
+        })
 }
-exports.selectAllArticles = (topic, sort_by="created_at", order="desc") => {
+exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
     const sortByCategories = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url"]
     const orderCategories = ["desc", "asc"]
 
     if (!sortByCategories.includes(sort_by.toLowerCase()) || !orderCategories.includes(order.toLowerCase())) {
-        return Promise.reject({status: 400, msg: "bad request"})
+        return Promise.reject({ status: 400, msg: "bad request" })
     }
 
     const queryValues = []
@@ -52,9 +52,9 @@ exports.selectAllArticles = (topic, sort_by="created_at", order="desc") => {
     queryString += `GROUP BY a.article_id ORDER BY a.${sort_by} ${order}`
 
     return db.query(queryString, queryValues)
-    .then(result => {
-        return result.rows
-    })
+        .then(result => {
+            return result.rows
+        })
 }
 
 exports.patchVotes = (id, votes) => {
@@ -63,10 +63,10 @@ exports.patchVotes = (id, votes) => {
     SET votes = votes + $1
     WHERE article_id = ${id}
     RETURNING *;`,
-    [votes])
-    .then(result => {
-        return result.rows[0]
-    })
+        [votes])
+        .then(result => {
+            return result.rows[0]
+        })
 }
 exports.postComment = (id, username, body) => {
     return db.query(`
@@ -75,8 +75,31 @@ exports.postComment = (id, username, body) => {
     VALUES
     ($1, $2, $3)
     RETURNING *;`,
-    [id, username, body])
-    .then(result => {
-        return result.rows[0]
-    })
+        [id, username, body])
+        .then(result => {
+            return result.rows[0]
+        })
+}
+
+exports.postNewArticle = (article) => {
+    let queryString = `INSERT INTO articles `
+    const columns =  ["author", "title", "body", "topic"]
+    let values =  ["$1"," $2", "$3", "$4"]
+    let queryValuesArray = [article.author, article.title, article.body, article.topic]
+
+    if (article.article_img_url) {
+        columns.push("article_img_url")
+        values.push("$5")
+        queryValuesArray.push(article.article_img_url)
+    }
+
+    queryString += `(${columns.join()}) VALUES (${values.join()}) RETURNING * `
+
+    return db.query(queryString, queryValuesArray)
+        .then((result) => {
+            const article = result.rows[0]
+            article.comment_count = 0
+           
+            return article
+        })
 }
