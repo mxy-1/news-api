@@ -22,4 +22,3 @@ app.use(customError)
 app.use(serverError)
 
 module.exports = app
-
