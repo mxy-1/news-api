@@ -214,5 +214,21 @@
         }
       ]
     }
+  },
+  "PATCH /api/articles/comments:comment_id": {
+    "description": "serves comment object with the votes updated by the given comment_id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 16,
+          "votes": 10,
+          "author": "butter_bridge",
+          "article_id": 6,
+          "body": "This is a bad article name",
+          "created_at": "2020-10-11T15:23:00.000Z"
+        }
+      ]
+    }
   }
 }

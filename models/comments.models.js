@@ -12,3 +12,13 @@ exports.deleteComment = (id) => {
       } 
    })
 }
+
+exports.patchVotes = (id, votes) => {
+  return db.query(`
+  UPDATE comments
+  SET
+  votes = ${votes} + votes
+  WHERE comment_id = $1
+  RETURNING *`, [id])
+  .then(({rows}) => rows[0])
+}
