@@ -483,7 +483,7 @@ describe("/api/users", () => {
         return request(app)
             .get("/api/users/lurker")
             .expect(200)
-            .then(({body}) => {
+            .then(({ body }) => {
                 const user = body.user
                 expect(user.username).toBe("lurker")
                 expect(user).toMatchObject({
@@ -496,8 +496,8 @@ describe("/api/users", () => {
         return request(app)
             .get("/api/users/me")
             .expect(400)
-            .then(({body}) => {
-                expect(body.msg).toBe("not found")  
+            .then(({ body }) => {
+                expect(body.msg).toBe("not found")
             })
     })
 })
@@ -522,6 +522,77 @@ describe("/api/comments/:comment_id", () => {
             .expect(400)
             .then(response => {
                 expect(response.body.msg).toBe("bad request")
+            })
+    })
+
+    test("200: PATCH increments votes on a comment by comment_id", () => {
+        return request(app)
+            .patch("/api/comments/5")
+            .send({ inc_votes: 10 })
+            .expect(200)
+            .then(({ body }) => {
+                const {comment} = body
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    article_id: expect.any(Number),
+                    author: expect.any(String),
+                    votes: 10,
+                    created_at: expect.any(String)
+                })
+            })
+    })
+    test("200: PATCH decrements votes on a comment by comment_id", () => {
+        return request(app)
+            .patch("/api/comments/5")
+            .send({ inc_votes: -10 })
+            .expect(200)
+            .then(({ body }) => {
+                const {comment} = body
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    article_id: expect.any(Number),
+                    author: expect.any(String),
+                    votes: -10,
+                    created_at: expect.any(String)
+                })
+            })
+    })
+    test("404: PATCH responds with not found when given a comment_id that does not exist", () => {
+        return request(app)
+            .patch("/api/comments/999")
+            .send({ inc_votes: 10 })
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe("not found")
+            })
+    })
+    test("400: PATCH responds with bad request when given a comment_id that is invalid", () => {
+        return request(app)
+            .patch("/api/comments/asd")
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("400: PATCH responds with bad request when missing inc_votes", () => {
+        return request(app)
+            .patch("/api/comments/2")
+            .send({dfa:22})
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("400: PATCH responds with bad request when invalid inc_votes value", () => {
+        return request(app)
+            .patch("/api/comments/2")
+            .send({inc_votes: "asd"})
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe("bad request")
             })
     })
 })
