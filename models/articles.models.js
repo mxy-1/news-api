@@ -29,7 +29,7 @@ exports.selectArticleComments = (article_id) => {
             return result.rows
         })
 }
-exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
+exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc", limit = 10, p = 1, all=false) => {
     const sortByCategories = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url"]
     const orderCategories = ["desc", "asc"]
 
@@ -39,7 +39,7 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
 
     const queryValues = []
     let queryString = `
-    SELECT a.author, a.article_id, a.title, a.topic, a.created_at, a.votes, a. article_img_url, count(c.comment_id) as comment_count 
+    SELECT a.author, a.article_id, a.title, a.topic, a.created_at, a.votes, a. article_img_url, COUNT(c.comment_id) as comment_count
     FROM articles a 
     LEFT JOIN comments c
     ON a.article_id = c.article_id `
@@ -49,12 +49,23 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
         queryString += `WHERE topic = $1 `
     }
 
-    queryString += `GROUP BY a.article_id ORDER BY a.${sort_by} ${order}`
+    if (p === 1) {
+        p = 0
+    } else {
+        p = (p - 1) * limit
+    }
 
+    queryString += `GROUP BY a.article_id ORDER BY a.${sort_by} ${order} `
+    
+    const paginationStr = `LIMIT ${limit} OFFSET ${p}`
+
+    if (!all) {
+        queryString += paginationStr
+    }
     return db.query(queryString, queryValues)
-        .then(result => {
-            return result.rows
-        })
+    .then(result => {
+        return result.rows
+    })
 }
 
 exports.patchVotes = (id, votes) => {
@@ -83,8 +94,8 @@ exports.postComment = (id, username, body) => {
 
 exports.postNewArticle = (article) => {
     let queryString = `INSERT INTO articles `
-    const columns =  ["author", "title", "body", "topic"]
-    let values =  ["$1"," $2", "$3", "$4"]
+    const columns = ["author", "title", "body", "topic"]
+    let values = ["$1", " $2", "$3", "$4"]
     let queryValuesArray = [article.author, article.title, article.body, article.topic]
 
     if (article.article_img_url) {
