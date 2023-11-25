@@ -20,7 +20,9 @@
       "author",
       "topic",
       "sort_by",
-      "order"
+      "order",
+      "limit",
+      "p"
     ],
     "exampleDefaultResponse": {
       "article": {
@@ -34,18 +36,18 @@
         "count_comment": 11
       }
     },
-    "exampleResponse": {
-      "articles": [
-        {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
-          "votes": 0,
-          "comment_count": 6
-        }
-      ]
+    "exampleLimitAndPageResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "created_at": 1594329060000,
+        "votes": 100,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "count_comment": 11
+      },
+      "total_count": 3
     },
     "exampleTopicQueryResponse": {
       "articles": [

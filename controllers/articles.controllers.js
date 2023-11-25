@@ -29,7 +29,13 @@ exports.getArticleComments = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
     const {topic, sort_by, order, limit, p} = req.query
-   
+    
+    Object.keys(req.query).forEach(query => {
+        if (!["topic", "sort_by", "order", "limit", "p"].includes(query.toLowerCase())) {
+            res.status(400).send({msg: "bad request"})
+        }
+    })
+    
     const articlesPromise = [selectAllArticles(topic, sort_by, order, limit, p), selectAllArticles(topic, sort_by, order, limit, p, true) ]
 
     if (topic) {
@@ -40,6 +46,9 @@ exports.getAllArticles = (req, res, next) => {
     .then(resolvedPromise => {
         const articles = resolvedPromise[0]
         const total_count = resolvedPromise[1].length
+        if (!articles.length && total_count) {
+            return Promise.reject({ status: 404, msg: "not found"})
+        }
         res.status(200).send({articles, total_count})
     })
     .catch(next)

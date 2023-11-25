@@ -548,7 +548,7 @@ describe("/api/articles", () => {
             expect(total_count).toBe(13)
         })
     })
-    test("200: GET responds with total count property displaying total number of articles when filters are applied", () => {
+    test("200: GET responds with total count property displaying total number of articles, discounting the limit, when filters are applied", () => {
         return request(app)
         .get("/api/articles/?p=2&limit=5&sort_by=article_id")
         .expect(200)
@@ -557,6 +557,23 @@ describe("/api/articles", () => {
             expect(total_count).toBe(13)
         })
     })
+    test("400: GET responds with bad request when given query does not exist", () => {
+        return request(app)
+        .get("/api/articles/?dsds=3")
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe("bad request")
+        })
+    })
+    test("404: GET responds with not found when the page does not exist", () => {
+        return request(app)
+        .get("/api/articles/?p=3")
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe("not found")
+        })
+    })
+    
 })  
 
 describe("/api/articles/:article_id/comments", () => {

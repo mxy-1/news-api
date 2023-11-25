@@ -29,7 +29,7 @@ exports.selectArticleComments = (article_id) => {
             return result.rows
         })
 }
-exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc", limit = 10, p = 1, all=false) => {
+exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc", limit = 10, p = 1, all = false) => {
     const sortByCategories = ["article_id", "title", "topic", "author", "created_at", "votes", "article_img_url"]
     const orderCategories = ["desc", "asc"]
 
@@ -56,16 +56,16 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc", limi
     }
 
     queryString += `GROUP BY a.article_id ORDER BY a.${sort_by} ${order} `
-    
+
     const paginationStr = `LIMIT ${limit} OFFSET ${p}`
 
     if (!all) {
         queryString += paginationStr
     }
     return db.query(queryString, queryValues)
-    .then(result => {
-        return result.rows
-    })
+        .then(result => {
+            return result.rows
+        })
 }
 
 exports.patchVotes = (id, votes) => {
