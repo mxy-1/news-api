@@ -16,16 +16,27 @@ exports.selectArticleById = (id) => {
         })
 }
 
-exports.selectArticleComments = (article_id) => {
+exports.selectArticleComments = (article_id, limit=10, p=1) => {
+    if (p === 1) {
+        p = 0
+    } else {
+        p = (p - 1) * limit
+    }
+
     return db.query(`
     SELECT c.comment_id, c.votes, c.author, a.article_id, c.body, c.created_at 
     FROM articles a 
     JOIN comments c 
     ON a.article_id = c.article_id 
     WHERE a.article_id = $1 
-    ORDER BY c.created_at DESC;
+    ORDER BY c.created_at DESC
+    LIMIT ${limit} 
+    OFFSET ${p};
     `, [article_id])
         .then(result => {
+            if (!result.rows.length && p>1) {
+                return Promise.reject({status:404, msg: "not found"})
+            }
             return result.rows
         })
 }

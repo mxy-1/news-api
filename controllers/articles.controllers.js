@@ -12,12 +12,19 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getArticleComments = (req, res, next) => {
     const {article_id} = req.params
-
+    const {limit, p} = req.query
+    
     if (! +article_id) {
         res.status(400).send({msg: "bad request"})
     }
 
-    const commentsPromise = [selectArticleComments(article_id), checkExists("articles", "article_id",article_id )]
+    Object.keys(req.query).forEach(query => {
+        if (!["limit", "p"].includes(query.toLowerCase())) {
+            return res.status(400).send({msg: "bad request"})
+        }
+    })
+
+    const commentsPromise = [selectArticleComments(article_id, limit, p), checkExists("articles", "article_id",article_id )]
  
     Promise.all(commentsPromise)
     .then((resolvedPromise) => {

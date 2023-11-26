@@ -452,7 +452,7 @@ describe("/api/articles", () => {
                 expect(body.msg).toBe("bad request")
             })
     })
-// GET /api/articles (pagination)
+
     test("200: GET limits number of response to 10 by default", () => {
         return request(app)
         .get("/api/articles")
@@ -635,7 +635,6 @@ describe("/api/articles/:article_id/comments", () => {
             .expect(200)
             .then(({ body }) => {
                 const commentsArray = body.comments
-                expect(commentsArray.length).toBe(11)
                 expect(commentsArray).toBeSortedBy("created_at", { descending: true })
                 commentsArray.forEach(comment => {
                     expect(typeof comment.comment_id).toBe("number")
@@ -669,6 +668,107 @@ describe("/api/articles/:article_id/comments", () => {
             .expect(400)
             .then(response => {
                 expect(response.body.msg).toBe("bad request")
+            })
+    })
+
+    test("200: GET limits responses by a default of 10", () => {
+        return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+                const commentsArray = body.comments
+                expect(commentsArray.length).toBe(10)
+                commentsArray.forEach(comment => {
+                    expect(typeof comment.comment_id).toBe("number")
+                    expect(typeof comment.votes).toBe("number")
+                    expect(typeof comment.created_at).toBe("string")
+                    expect(typeof comment.author).toBe("string")
+                    expect(typeof comment.body).toBe("string")
+                    expect(typeof comment.article_id).toBe("number")
+                })
+            })
+    })
+    test("200: GET limits responses by a given number", () => {
+        return request(app)
+            .get("/api/articles/1/comments/?limit=3")
+            .expect(200)
+            .then(({ body }) => {
+                const commentsArray = body.comments
+                expect(commentsArray.length).toBe(3)
+                commentsArray.forEach(comment => {
+                    expect(typeof comment.comment_id).toBe("number")
+                    expect(typeof comment.votes).toBe("number")
+                    expect(typeof comment.created_at).toBe("string")
+                    expect(typeof comment.author).toBe("string")
+                    expect(typeof comment.body).toBe("string")
+                    expect(typeof comment.article_id).toBe("number")
+                })
+            })
+    })
+    test("400: GET limits responds with bad request when limit value is not valid", () => {
+        return request(app)
+            .get("/api/articles/1/comments/?limit=ubi")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("200: GET accepts page query and paginates respond", () => {
+        return request(app)
+            .get("/api/articles/1/comments/?p=2")
+            .expect(200)
+            .then(({ body }) => {
+                const commentsArray = body.comments
+                expect(commentsArray.length).toBe(1)
+                commentsArray.forEach(comment => {
+                    expect(typeof comment.comment_id).toBe("number")
+                    expect(typeof comment.votes).toBe("number")
+                    expect(typeof comment.created_at).toBe("string")
+                    expect(typeof comment.author).toBe("string")
+                    expect(typeof comment.body).toBe("string")
+                    expect(typeof comment.article_id).toBe("number")
+                })
+            })
+    })
+    test("400: GET limits responds with bad request when page value is not valid", () => {
+        return request(app)
+            .get("/api/articles/1/comments/?p=ubi")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("400: GET responds with bad request when query does not exist", () => {
+        return request(app)
+            .get("/api/articles/1/comments/?asdsd=2")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
+    test("404: GET responds with not found when page does not exist", () => {
+        return request(app)
+            .get("/api/articles/1/comments/?p=99")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("not found")
+            })
+    })
+    test("200: GET accepts limit and page query", () => {
+        return request(app)
+            .get("/api/articles/1/comments/?p=2&limit=2")
+            .expect(200)
+            .then(({ body }) => {
+                const commentsArray = body.comments
+                expect(commentsArray.length).toBe(2)
+                commentsArray.forEach(comment => {
+                    expect(typeof comment.comment_id).toBe("number")
+                    expect(typeof comment.votes).toBe("number")
+                    expect(typeof comment.created_at).toBe("string")
+                    expect(typeof comment.author).toBe("string")
+                    expect(typeof comment.body).toBe("string")
+                    expect(typeof comment.article_id).toBe("number")
+                })
             })
     })
 })
