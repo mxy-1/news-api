@@ -1,4 +1,4 @@
-const { serverError, invalidPath, customError } = require("./errors")
+const { serverError, invalidPath, customError, psqlError } = require("./errors")
 const articlesRouter = require("./routes/articles-router")
 const commentsRouter = require("./routes/comments-router")
 const usersRouter = require("./routes/users-router")
@@ -19,6 +19,7 @@ apiRouter.use("/users", usersRouter)
 app.all("*", invalidPath)
 
 app.use(customError)
+app.use(psqlError)
 app.use(serverError)
 
 module.exports = app
