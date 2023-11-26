@@ -27,6 +27,59 @@ describe("/api/topics", () => {
                 })
             })
     })
+    test("201: POST accepts an array of topics with the properties slug and description, and responds with new topic object", () => {
+        return request(app)
+            .post("/api/topics")
+            .send({
+                "slug": "topic name here",
+                "description": "description here"
+            })
+            .expect(201)
+            .then(res => {
+                const { topic } = res.body
+                expect(topic).toMatchObject({
+                    "slug": "topic name here",
+                    "description": "description here"
+                })
+            })
+    })
+    test("400: POST responds with bad request when properties are missing", () => {
+        return request(app)
+            .post("/api/topics")
+            .send({
+                "asdsd": "topic name here",
+                "description": "description here"
+            })
+            .expect(400)
+            .then(res => {
+                expect(res.body.msg).toBe("bad request")
+            })
+    })
+    test("400: POST responds with bad request when properties are not valid", () => {
+        return request(app)
+            .post("/api/topics")
+            .send({
+                "slug": 1234,
+                "description": "description here"
+            })
+            .expect(400)
+            .then(res => {
+                expect(res.body.msg).toBe("bad request")
+            })
+    })
+    test("400: POST responds with bad request when there are extra fields", () => {
+        return request(app)
+            .post("/api/topics")
+            .send({
+                "slug": "123",
+                "description": "description here",
+                "extra": "property"
+            })
+            .expect(400)
+            .then(res => {
+                expect(res.body.msg).toBe("bad request")
+            })
+    })
 })
 
 describe("ANY /invalidpath", () => {
@@ -455,126 +508,126 @@ describe("/api/articles", () => {
 
     test("200: GET limits number of response to 10 by default", () => {
         return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-            const articles = body.articles
-            expect(articles.length).toBe(10)
-            articles.forEach(article => {
-                expect(article).toMatchObject({
-                    article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number),
-                    article_img_url: expect.any(String),
+            .get("/api/articles")
+            .expect(200)
+            .then(({ body }) => {
+                const articles = body.articles
+                expect(articles.length).toBe(10)
+                articles.forEach(article => {
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                    })
+                    expect(typeof +article.comment_count).toBe("number")
                 })
-                expect(typeof +article.comment_count).toBe("number")
             })
-        })
     })
     test("200: GET accepts limit query to limit number of responses", () => {
         return request(app)
-        .get("/api/articles/?limit=5")
-        .expect(200)
-        .then(({ body }) => {
-            const articles = body.articles
-            expect(articles.length).toBe(5)
-            articles.forEach(article => {
-                expect(article).toMatchObject({
-                    article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number),
-                    article_img_url: expect.any(String),
+            .get("/api/articles/?limit=5")
+            .expect(200)
+            .then(({ body }) => {
+                const articles = body.articles
+                expect(articles.length).toBe(5)
+                articles.forEach(article => {
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                    })
+                    expect(typeof +article.comment_count).toBe("number")
                 })
-                expect(typeof +article.comment_count).toBe("number")
             })
-        })
     })
     test("200: GET accepts p query to specify the page to start", () => {
         return request(app)
-        .get("/api/articles/?p=2")
-        .expect(200)
-        .then(({ body }) => {
-            const articles = body.articles
-            expect(articles.length).toBe(3)
-            articles.forEach(article => {
-                expect(article).toMatchObject({
-                    article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number),
-                    article_img_url: expect.any(String),
+            .get("/api/articles/?p=2")
+            .expect(200)
+            .then(({ body }) => {
+                const articles = body.articles
+                expect(articles.length).toBe(3)
+                articles.forEach(article => {
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                    })
+                    expect(typeof +article.comment_count).toBe("number")
                 })
-                expect(typeof +article.comment_count).toBe("number")
             })
-        })
     })
     test("200: GET accepts multiple queries", () => {
         return request(app)
-        .get("/api/articles/?limit=5&p=1&sort_by=article_id&order=asc")
-        .expect(200)
-        .then(({ body }) => {
-            const articles = body.articles
-            expect(articles.length).toBe(5)
-            expect(articles[0].article_id).toBe(1)
-            articles.forEach(article => {
-                expect(article).toMatchObject({
-                    article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number),
-                    article_img_url: expect.any(String),
+            .get("/api/articles/?limit=5&p=1&sort_by=article_id&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+                const articles = body.articles
+                expect(articles.length).toBe(5)
+                expect(articles[0].article_id).toBe(1)
+                articles.forEach(article => {
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                    })
+                    expect(typeof +article.comment_count).toBe("number")
+                    expect(articles).toBeSortedBy("article_id", { descending: false })
                 })
-                expect(typeof +article.comment_count).toBe("number")
-                expect(articles).toBeSortedBy("article_id", { descending: false })
             })
-        })
     })
     test("200: GET responds with total count property displaying total number of articles", () => {
         return request(app)
-        .get("/api/articles/?p=2")
-        .expect(200)
-        .then(({ body }) => {
-            const {total_count} = body
-            expect(total_count).toBe(13)
-        })
+            .get("/api/articles/?p=2")
+            .expect(200)
+            .then(({ body }) => {
+                const { total_count } = body
+                expect(total_count).toBe(13)
+            })
     })
     test("200: GET responds with total count property displaying total number of articles, discounting the limit, when filters are applied", () => {
         return request(app)
-        .get("/api/articles/?p=2&limit=5&sort_by=article_id")
-        .expect(200)
-        .then(({ body }) => {
-            const {total_count} = body
-            expect(total_count).toBe(13)
-        })
+            .get("/api/articles/?p=2&limit=5&sort_by=article_id")
+            .expect(200)
+            .then(({ body }) => {
+                const { total_count } = body
+                expect(total_count).toBe(13)
+            })
     })
     test("400: GET responds with bad request when given query does not exist", () => {
         return request(app)
-        .get("/api/articles/?dsds=3")
-        .expect(400)
-        .then(({ body }) => {
-            expect(body.msg).toBe("bad request")
-        })
+            .get("/api/articles/?dsds=3")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
     })
     test("404: GET responds with not found when the page does not exist", () => {
         return request(app)
-        .get("/api/articles/?p=3")
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe("not found")
-        })
+            .get("/api/articles/?p=3")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("not found")
+            })
     })
-    
-})  
+
+})
 
 describe("/api/articles/:article_id/comments", () => {
     test("201: POST responds with posted comment object", () => {

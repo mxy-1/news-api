@@ -14,6 +14,18 @@
       ]
     }
   },
+  "POST /api/topics": {
+    "description": "accepts an object and serves newly added topic object",
+    "queries": [],
+    "exampleResponse": {
+      "topics": [
+        {
+          "slug": "sluggy",
+          "description": "sluggish"
+        }
+      ]
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles",
     "queries": [
