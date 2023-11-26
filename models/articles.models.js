@@ -16,7 +16,23 @@ exports.selectArticleById = (id) => {
         })
 }
 
-exports.selectArticleComments = (article_id, limit=10, p=1) => {
+exports.deleteCommentByArticleId = (id) => {
+    return db.query(`
+    DELETE FROM comments 
+    WHERE article_id = $1
+    RETURNING *`, [id])
+        .then(({ rows }) => {
+            if (!rows.length) {
+                return Promise.reject({ status: 404, msg: "not found" });
+            }
+        })
+}
+
+exports.deleteArticle = (id) => {
+    return db.query(`DELETE FROM articles WHERE article_id = $1`, [id])
+}
+
+exports.selectArticleComments = (article_id, limit = 10, p = 1) => {
     if (p === 1) {
         p = 0
     } else {
@@ -34,8 +50,8 @@ exports.selectArticleComments = (article_id, limit=10, p=1) => {
     OFFSET ${p};
     `, [article_id])
         .then(result => {
-            if (!result.rows.length && p>1) {
-                return Promise.reject({status:404, msg: "not found"})
+            if (!result.rows.length && p > 1) {
+                return Promise.reject({ status: 404, msg: "not found" })
             }
             return result.rows
         })

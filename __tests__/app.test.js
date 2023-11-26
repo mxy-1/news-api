@@ -206,6 +206,28 @@ describe("/api/articles/:article_id", () => {
                 expect(body.msg).toBe("bad request")
             })
     })
+
+    test("204: DELETE an article based on id, and its respective comments", () => {
+        return request(app)
+            .delete("/api/articles/1")
+            .expect(204)
+    })
+    test("404: DELETE responds with not found when id does not exist", () => {
+        return request(app)
+            .delete("/api/articles/99")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toBe("not found")
+            })
+    })
+    test("404: DELETE responds with bad request when id is not valid", () => {
+        return request(app)
+            .delete("/api/articles/dfas")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe("bad request")
+            })
+    })
 })
 
 describe("/api/articles", () => {

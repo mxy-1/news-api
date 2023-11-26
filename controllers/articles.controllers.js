@@ -1,11 +1,23 @@
 const { checkExists } = require("../app-utils")
-const { selectArticleById, selectArticleComments, selectAllArticles, patchVotes, postComment, postNewArticle } = require("../models/articles.models")
+const { selectArticleById, selectArticleComments, selectAllArticles, patchVotes, postComment, postNewArticle, deleteArticle, deleteCommentByArticleId } = require("../models/articles.models")
 
 exports.getArticleById = (req, res, next) => {
     const {article_id} = req.params
     selectArticleById(article_id)
     .then((article) => {
         res.status(200).send({article})
+    })
+    .catch(next)
+}
+
+exports.deleteById = (req, res, next) => {
+    const {article_id} = req.params
+    deleteCommentByArticleId(article_id)
+    .then(() => {
+        return deleteArticle(article_id)
+    })
+    .then(() => {
+        res.sendStatus(204)
     })
     .catch(next)
 }
