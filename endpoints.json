@@ -233,7 +233,7 @@
       ]
     }
   },
-  "PATCH /api/articles/comments:comment_id": {
+  "PATCH /api/comments/:comment_id": {
     "description": "serves comment object with the votes updated by the given comment_id",
     "queries": [],
     "exampleResponse": {
