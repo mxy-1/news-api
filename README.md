@@ -1,8 +1,8 @@
-# News API
+# NC News API
 
 ## Description 
 
-This API can query a news database with node-postgres to create, read, update or delete information from the database. Some of the technologies used for creating this API include: Jest for testing, Supertest for testing HTTP, and Express for handling requests and middleware.
+This API can query a news database with node-postgres to perform CRUD operations. Some of the technologies used for creating this API include: Jest for testing, Supertest for testing HTTP, and Express for handling requests and middleware.
 
 ## Usage
 
@@ -16,7 +16,7 @@ For any versions below the suggested requirements, features may not work as inte
 
 ## Getting started
 
-1. Clone the repository 
+1. Clone the repository ```git clone https://github.com/mxy-1/news-api.git```
 2. Set up the project and install the relevant packages: ```npm install```
 3. Connect to the database - you will need to create two files: .env.test and .env.development. Add to each file: ```PGDATABASE= <name_of_database>```. The database name can be found in /db/setup.sql
 4. Create the database: ```npm run setup-dbs```
